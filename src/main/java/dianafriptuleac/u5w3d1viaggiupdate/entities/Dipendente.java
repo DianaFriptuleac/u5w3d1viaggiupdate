@@ -24,17 +24,19 @@ public class Dipendente {
     private String nome;
     private String cognome;
     private String email;
+    private String password;
     private String imgURL;
 
     @OneToMany(mappedBy = "dipendente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonIgnore //evito il ciclo infinito
     private List<Prenotazione> prenotazioni = new ArrayList<>();
 
-    public Dipendente(String username, String nome, String cognome, String email, String imgURL) {
+    public Dipendente(String username, String nome, String cognome, String email, String password, String imgURL) {
         this.username = username;
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
+        this.password = password;
         this.imgURL = imgURL;
     }
 
@@ -46,6 +48,7 @@ public class Dipendente {
                 ", nome='" + nome + '\'' +
                 ", cognome='" + cognome + '\'' +
                 ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
                 ", imgURL='" + imgURL + '\'' +
                 '}';
     }

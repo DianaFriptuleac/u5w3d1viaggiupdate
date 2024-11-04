@@ -12,20 +12,26 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class ExceptionsHandler {
     @ExceptionHandler(BadRequestException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.BAD_REQUEST) //400
     public ErrorsResponceDTO handleBadrequestEx(BadRequestException ex) {
         return new ErrorsResponceDTO(ex.getMessage(), LocalDateTime.now());
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) //401
+    public ErrorsResponceDTO handleUnauthorized(UnauthorizedException ex) {
+        return new ErrorsResponceDTO(ex.getMessage(), LocalDateTime.now());
+    }
+
     @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.NOT_FOUND) //404
     public ErrorsResponceDTO handleNotFoundEx(NotFoundException ex) {
         return new ErrorsResponceDTO(ex.getMessage(), LocalDateTime.now());
 
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)//500
     public ErrorsResponceDTO handleGeneriEx(Exception ex) {
         ex.printStackTrace();
         return new ErrorsResponceDTO("Problema lato server!", LocalDateTime.now());
