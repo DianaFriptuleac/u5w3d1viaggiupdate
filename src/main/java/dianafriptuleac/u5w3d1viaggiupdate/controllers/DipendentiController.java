@@ -13,8 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/dipendenti")
 public class DipendentiController {
@@ -29,17 +27,6 @@ public class DipendentiController {
         return this.dipendenteService.findAll(page, size, sortBy);
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Dipendente saveDipendente(@RequestBody @Validated DipendenteDTO body, BindingResult validationResult) {
-        if (validationResult.hasErrors()) {
-            String message = validationResult.getAllErrors().stream().map(objectError -> objectError.getDefaultMessage())
-                    .collect(Collectors.joining(". "));
-            throw new BadRequestException("Ci sono stati errori nel payload! " + message);
-        }
-        return this.dipendenteService.saveDipendente(body);
-
-    }
 
     @GetMapping("/{dipendenteId}")
     public Dipendente findById(@PathVariable Long dipendenteId) {

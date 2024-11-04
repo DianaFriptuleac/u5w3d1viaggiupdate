@@ -77,6 +77,7 @@ public class DipendenteService {
         foundDipendente.setNome(body.nome());
         foundDipendente.setCognome(body.cognome());
         foundDipendente.setEmail(body.email());
+        foundDipendente.setPassword(body.password());
         foundDipendente.setImgURL("https://ui-avatars.com/api/?name=" + body.nome() + "+" + body.cognome());
         return this.dipendenteRepository.save(foundDipendente);
     }
@@ -100,4 +101,12 @@ public class DipendenteService {
         dipendenteRepository.save(dipendente);
         return url;
     }
+
+    //find by email and username
+    public Dipendente findByEmailAndUsername(String email, String username) {
+        return this.dipendenteRepository.findByEmailAndUsername(email, username).orElseThrow(() ->
+                new NotFoundException("Il dipendente non trovato!"));
+
+    }
+
 }

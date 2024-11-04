@@ -11,4 +11,6 @@ public interface DipendenteRepository extends JpaRepository<Dipendente, Long> {
 
     Optional<Dipendente> findByUsername(String username);
 
+    Optional<Dipendente> findByEmailAndUsername(String email, String username);
+
 }
