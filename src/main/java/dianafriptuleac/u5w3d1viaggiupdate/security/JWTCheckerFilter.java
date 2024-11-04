@@ -1,5 +1,6 @@
 package dianafriptuleac.u5w3d1viaggiupdate.security;
 
+import dianafriptuleac.u5w3d1viaggiupdate.exceptions.UnauthorizedException;
 import dianafriptuleac.u5w3d1viaggiupdate.tools.JWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,16 +22,43 @@ public class JWTCheckerFilter extends OncePerRequestFilter {
 
     //Metodo richiamato ad ogni richiesta - controlla il token
     @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        // 1. Verifico se nella richiesta è presente l'Authorization Header,
+        // e se è ben formato ("Bearer josdjojosdj..."), altimenti - 401
+        String authHeader = request.getHeader("Authorization"); //reccupero l'header
+        if (authHeader == null || !authHeader.startsWith("Bearer "))
+            throw new UnauthorizedException("Inserire token nell'Authorization Header nel formato corretto!");
+
+        //2.Estrago il token dal header
+        String accessToken = authHeader.substring(7);// 7-nr. caratteri prima del token (Bearer )
+
+        //3.Verifico il token con il metodo del jwt.verifyToken(accessToken) che si trova nel tools.
+        jwt.verifyToken(accessToken);
+
+        //4. Se e tutto ok - passo la richiesta al prossiimo filtro con filterChain.
+        //con doFilter(request, response) riichiamo il prossimo filtro o controller della catena
+        //filterChain- catena di filtri di sicurezza
+        filterChain.doFilter(request, response);
+
+        // 5. Se qualcosa non va con il token --> 401
+    }
+
+
+    //*************************************************************************************************************
+    //Metodo richiamato ad ogni richiesta - controlla il token. Prova con try e catch
+   /* @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         // 1. Verifico se nella richiesta è presente l'Authorization Header,
         // e se è ben formato ("Bearer josdjojosdj..."), altimenti - 401
-        String authorizedHeader = request.getHeader("Authorization");
+        String authorizedHeader = request.getHeader("Authorization"); //reccupero l'header
         if (authorizedHeader == null || !authorizedHeader.startsWith("Bearer")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); //nel caso di errore - 401
+            //messaggio di errore al client
             response.getWriter().write("Inserire token nell'Authorization Header e nel formato corretto!");
-            return;
+            return; //interrompo il metodo nel caso di errore (blocco gli altri passaggi)
         }
         //2.Estrago il token dal header
         String accessToken = authorizedHeader.substring(7); // 7-nr. caratteri prima del token (Bearer )
@@ -41,16 +69,19 @@ public class JWTCheckerFilter extends OncePerRequestFilter {
 
             //4. Se e tutto ok - passo la richiesta al prossiimo filtro con filterChain.
             //con doFilter(request, response) riichiamo il prossimo filtro o controller della catena
+            //filterChain- catena di filtri di sicurezza
             filterChain.doFilter(request, response);
         } catch (Exception ex) {
             //5. se c'e qualcosa che non va con il token ci da un 401.
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); //401
             response.getWriter().write("Token non valido o scaduto. Effettuare un nuovo login.");
 
         }
-    }
+    }*/
+    //*************************************************************************************************************
 
-    // Disabilitare il filtro per tutte le richieste al controller Auth, quindi tutte le richieste che avranno come URL /auth/** non dovranno
+
+    // Disabilito il filtro per tutte le richieste al controller Auth, quindi tutte le richieste che avranno come URL /auth/** non dovranno
     // avere il controllo del token
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
